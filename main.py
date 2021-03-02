@@ -19,9 +19,9 @@ IMG_DIMENSIONS = [800, 600]
 FIXATION_DURATION_IN_MILLIES = 500
 IMG_STIMULUS_DURATION_IN_MILLIES = 53
 MASK_DURATION_IN_MILLIES = 500
-# TOP_LEVEL_DIRECTORIES = [["threatening", ["snake","wasp"]], ["non-threatening",["salamander", "fly"]]]
-TOP_LEVEL_DIRECTORIES = [["threatening", ["snake"]], ["non-threatening",[]]]
-THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES = [["NoFilter", "no-normalization"], ["LSF", "contrast-normalized"],
+TOP_LEVEL_DIRECTORIES = [["threatening", ["snake","wasp"]], ["non-threatening",["salamander", "fly"]]]
+#TOP_LEVEL_DIRECTORIES = [["threatening", ["snake"]], ["non-threatening",[]]]
+THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES = [["NoFilter", "contrast-normalized"], ["LSF", "contrast-normalized"],
                                           ["LSF", "no-normalization"], ["HSF", "contrast-normalized"],
                                           ["HSF", "no-normalization"]]
 OUTPUT_FILE_NAME = "threat_detection_exp"
@@ -56,7 +56,7 @@ def create_filter_conditions_list(total_elements):
     filter_conditions_list = []
     while n < total_elements:
         filter_conditions_list.append(THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES[i])
-        if i == len(THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES):
+        if i == len(THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES)-1:
             i = 0
         n = n+1
         i = i+1
@@ -301,8 +301,6 @@ class ExperimentInformation:
         welcome_text.pack(side=tk.TOP)
         self.text_frame.place(in_=self.root_frame,anchor="c", relx=.5, rely=.25)
 
-
-
 # MAIN SCRIPT
 # read visual stimuli from files into experiment
 visual_stimuli = []
@@ -316,9 +314,9 @@ for directoryN in range(len(TOP_LEVEL_DIRECTORIES)):
             isThreatening = TOP_LEVEL_DIRECTORIES[directoryN][0]
             animal = TOP_LEVEL_DIRECTORIES[directoryN][1][first_subdirectoryN]
             id = second_sub_level_directories[second_subdirectoryN]
-            name = animal + id
             spatialFrequency = filter_conditions[second_subdirectoryN][0]
             contrastNormalization = filter_conditions[second_subdirectoryN][1]
+            name = os.listdir("img/" + isThreatening + "/" + animal + "/" +second_sub_level_directories[second_subdirectoryN] + "/" + spatialFrequency + "/" + contrastNormalization)[0].split('.pn')[0]
             visual_stimuli.append(
                 VisualStimulus(isThreatening, spatialFrequency, contrastNormalization, name,
                                Image.open("img/" + isThreatening + "/" +
