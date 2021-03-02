@@ -4,7 +4,6 @@ import datetime
 import os
 import tkinter as tk
 from random import shuffle
-from time import sleep
 
 from VisualStimulus import VisualStimulus
 from psychopy import visual, event, clock
