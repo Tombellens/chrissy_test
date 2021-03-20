@@ -228,7 +228,7 @@ class ParticipantInfoFrame:
         self.vision_field.config(font=(TEXT_FONT, TEXT_FONT_SIZE))
         self.vision_field.grid(row=4, column=1, padx=20)
         
-        debriefing_label = tk.Label(self.questionFrame, text="I want to receive a debriefing (Yes/ No): ")
+        debriefing_label = tk.Label(self.questionFrame, text="Notify me about the results once the study is completed (Yes/ No): ")
         debriefing_label.config(font=(TEXT_FONT, TEXT_FONT_SIZE))
         debriefing_label.grid(row=5, column=0, padx=100)
         self.debriefing_field.config(font=(TEXT_FONT, TEXT_FONT_SIZE))
