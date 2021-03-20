@@ -133,7 +133,7 @@ class WelcomeFrame:
                                      "information in rapid threat detection.\nThroughout evolution, rapid threat "
                                      "detection has always been an advantage for survival. \nResearchers believe "
                                      "that humans and non-human primates adapted to danger in their environments "
-                                     "and became faster at detecting threatening stimuli (such as snakes) vs "
+                                     "and became faster at detecting threatening stimuli vs "
                                      "non-threatening stimuli.\nThese findings were confirmed in experiments with "
                                      "babies, children, and adults. However, which visual features allow for this "
                                      "rapid threat detection?\nIn this experiment, we will study the role of high "
