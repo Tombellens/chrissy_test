@@ -22,7 +22,7 @@ TOP_LEVEL_DIRECTORIES = [["threatening", ["snake","wasp"]], ["non-threatening",[
 #TOP_LEVEL_DIRECTORIES = [["threatening", ["snake"]], ["non-threatening",[]]]
 THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES = [["NoFilter", "contrast-normalized"], ["LSF", "contrast-normalized"],
                                           ["LSF", "no-normalization"], ["HSF", "contrast-normalized"],
-                                          ["HSF", "no-normalization"]]
+                                          ["HSF", "no-normalization"], ["NoFilter", "contrast-normalized"]]
 OUTPUT_FILE_NAME = "threat_detection_exp"
 PC_NAME = "PC_1"
 FULL_OUTPUT_FILE_NAME = OUTPUT_FILE_NAME + "_" + PC_NAME
@@ -382,8 +382,8 @@ for visualImageStimN in range(len(visual_stimuli)):
         window.flip()
 
     # display the message-screen
-    message1 = visual.TextStim(win=window, pos=[0, +2], text=key_distribution[0] + ' = Threatening')
-    message2 = visual.TextStim(win=window, pos=[0, -2], text=key_distribution[1] + ' = Non-threatening')
+    message1 = visual.TextStim(win=window, pos=[0, +2], text=key_distribution[0].capitalize() + ' = Threatening')
+    message2 = visual.TextStim(win=window, pos=[0, -2], text=key_distribution[1].capitalize() + ' = Non-threatening')
     message1.draw()
     message2.draw()
     window.flip()
