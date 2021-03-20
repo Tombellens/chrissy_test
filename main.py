@@ -2,6 +2,7 @@ import csv
 import math
 import datetime
 import os
+import time
 import tkinter as tk
 from random import shuffle
 
@@ -18,16 +19,19 @@ IMG_DIMENSIONS = [800, 600]
 FIXATION_DURATION_IN_MILLIES = 500
 IMG_STIMULUS_DURATION_IN_MILLIES = 53
 MASK_DURATION_IN_MILLIES = 500
+
 TOP_LEVEL_DIRECTORIES = [["threatening", ["snake","wasp"]], ["non-threatening",["salamander", "fly"]]]
 #TOP_LEVEL_DIRECTORIES = [["threatening", ["snake"]], ["non-threatening",[]]]
 THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES = [["NoFilter", "contrast-normalized"], ["LSF", "contrast-normalized"],
                                           ["LSF", "no-normalization"], ["HSF", "contrast-normalized"],
                                           ["HSF", "no-normalization"], ["NoFilter", "contrast-normalized"]]
+MASK_DIRECTORY = "img/masks"
+
 OUTPUT_FILE_NAME = "threat_detection_exp"
 PC_NAME = "PC_1"
 FULL_OUTPUT_FILE_NAME = OUTPUT_FILE_NAME + "_" + PC_NAME
-FIELD_NAMES_TRIAL_INFO = ["PARTICIPANT_ID", "EXPERIMENT_STARTED", "PC_NAME", "TRIALS", "EMS_NUMBER", "AGE", "VISION", "DEBRIEFING", "RANK", "IS_THREATENING", "SPATIAL_FREQUENCY","CONTRAST-NORMALIZATION", "IMG_NAME", "KEY_PRESSED",
-                          "CORRECT_ANSWER", "REACTION_TIME_IN_MILLIES"]
+FIELD_NAMES_TRIAL_INFO = ["PARTICIPANT_ID", "EXPERIMENT_STARTED", "PC_NAME", "TRIALS", "EMS_NUMBER", "AGE", "VISION", "DEBRIEFING", "RANK", "IS_THREATENING", "SPATIAL_FREQUENCY","CONTRAST-NORMALIZATION", "IMG_NAME","MASK_NAME", "KEY_PRESSED",
+                          "CORRECT_ANSWER", "REACTION_TIME_IN_MILLIES", "EST_DISPLAY_TIME"]
 PARTICIPANT_INFO_FILE_NAME = "threat_detection_exp_participants"
 FIELD_NAMES_PARTICIPANT_INFO_FILE = ["PARTICIPANT_ID", "EMS_NUMBER", "AGE", "VISION", "DEBRIEFING"]
 
@@ -324,6 +328,12 @@ for directoryN in range(len(TOP_LEVEL_DIRECTORIES)):
                                           spatialFrequency + "/" + contrastNormalization + "/" + name + ".png" )))
 fileWriter = CsvFileWriter(FULL_OUTPUT_FILE_NAME, FIELD_NAMES_TRIAL_INFO)
 
+#read masks into experiment
+mask_img = []
+for mask_file_directory in os.listdir(MASK_DIRECTORY):
+    mask_img.append(Image.open(MASK_DIRECTORY + '/' + mask_file_directory))
+
+
 #Initial frames
 
 root_window = tk.Tk()
@@ -349,15 +359,17 @@ fixation_cross = visual.ShapeStim(window,
                                   closeShape=False,
                                   lineColor="white"
                                   )
-grating_stimulus = visual.GratingStim(window, tex='sin', mask='gauss', sf=5, size=10,
-                                      name='gabor', autoLog=False)
 fixation_duration_in_frames = get_frames_by_millieseconds(FIXATION_DURATION_IN_MILLIES)
 stimulus_duration_in_frames = get_frames_by_millieseconds(IMG_STIMULUS_DURATION_IN_MILLIES)
 mask_duration_in_frames = get_frames_by_millieseconds(MASK_DURATION_IN_MILLIES)
 total_duration_in_frames = fixation_duration_in_frames + stimulus_duration_in_frames + mask_duration_in_frames
 
-# randomize stimuli order
+# randomize stimuli & mask order
 shuffle(visual_stimuli)
+shuffle(mask_img)
+
+#break before experiment starts
+time.sleep(3)
 #pick right key distribution-set
 key_distribution = get_key_distribution_by_id(PARTICIPANT_ID)
 
@@ -367,20 +379,29 @@ for visualImageStimN in range(len(visual_stimuli)):
     column_data = [str(PARTICIPANT_ID), TIME_STARTED, PC_NAME, str(TRIALS), str(EMS_ID), str(AGE), VISION, DEBRIEFING, str(visualImageStimN), visual_stimulus.isThreatening,
                    visual_stimulus.spatialFrequency,
                    visual_stimulus.contrastNormalization,
-                   visual_stimulus.name]
+                   visual_stimulus.name,
+                   mask_img[visualImageStimN].filename.replace(MASK_DIRECTORY, "")]
     image_stimulus = visual.ImageStim(
         image=visual_stimuli[visualImageStimN].img.resize((IMG_DIMENSIONS[0], IMG_DIMENSIONS[1])), win=window)
+    mask_stimulus = visual.ImageStim(
+        image = mask_img[visualImageStimN].resize((IMG_DIMENSIONS[0], IMG_DIMENSIONS[1])), win=window)
 
     # display the fixation, the image stimulus and the mask/ grating
+
+    display_initial_time = 0;
+    display_stop_time = 0;
     for frameN in range(total_duration_in_frames):
-        if 0 <= frameN < fixation_duration_in_frames:
+        if 0 <= frameN <= fixation_duration_in_frames:
             fixation_cross.draw()
-        if fixation_duration_in_frames <= frameN < fixation_duration_in_frames + stimulus_duration_in_frames:
+            display_initial_time = datetime.datetime.now()
+        if fixation_duration_in_frames < frameN < fixation_duration_in_frames + stimulus_duration_in_frames:
             image_stimulus.draw()
+            display_stop_time = datetime.datetime.now()
         if fixation_duration_in_frames + stimulus_duration_in_frames <= frameN:
-            grating_stimulus.draw()
+            mask_stimulus.draw()
         window.flip()
 
+    display_time_elapsed_in_millies = (display_stop_time - display_initial_time).microseconds / 1000
     # display the message-screen
     message1 = visual.TextStim(win=window, pos=[0, +2], text=key_distribution[0].capitalize() + ' = Threatening')
     message2 = visual.TextStim(win=window, pos=[0, -2], text=key_distribution[1].capitalize() + ' = Non-threatening')
@@ -413,6 +434,7 @@ for visualImageStimN in range(len(visual_stimuli)):
     column_data.append(selected_key)
     column_data.append(str(accurate_answer))
     column_data.append(str(time_elapsed_in_millies))
+    column_data.append(str(display_time_elapsed_in_millies))
     fileWriter.add_row(column_data)
 
 
