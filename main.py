@@ -21,6 +21,8 @@ FIXATION_DURATION_IN_MILLIES = 500
 IMG_STIMULUS_DURATION_IN_MILLIES = 53
 MASK_DURATION_IN_MILLIES = 500
 
+STARTUP_TIME_MILLIES = 5000
+
 TOP_LEVEL_DIRECTORIES = [["threatening", ["snake","wasp"]], ["non-threatening",["salamander", "fly"]]]
 #TOP_LEVEL_DIRECTORIES = [["threatening", ["snake"]], ["non-threatening",[]]]
 THIRD_AND_FOURTH_SUB_LEVEL_DIRECTORIES = [["NoFilter", "contrast-normalized"], ["LSF", "contrast-normalized"],
@@ -372,7 +374,14 @@ shuffle(visual_stimuli)
 shuffle(mask_img)
 
 #break before experiment starts
-time.sleep(3)
+start_initial_time = datetime.datetime.now()
+start_current_time = datetime.datetime.now()
+while ((start_current_time - start_initial_time).total_seconds() * 1000) < STARTUP_TIME_MILLIES:
+    message0 = visual.TextStim(win=window, pos=[0, 0], text="The experiment will start in " +str(5 - int((start_current_time - start_initial_time).total_seconds())))
+    message0.draw()
+    start_current_time = datetime.datetime.now()
+    window.flip()
+
 #pick right key distribution-set
 key_distribution = get_key_distribution_by_id(PARTICIPANT_ID)
 
@@ -443,8 +452,10 @@ for visualImageStimN in range(len(visual_stimuli)):
 
 #go to qualtrics
 window.flip()
-message1 = visual.TextStim(win=window, pos=[0, 0], text="This is the end of the first part of the experiment. Please "
+message3 = visual.TextStim(win=window, pos=[0, 0], text="This is the end of the first part of the experiment. Please "
                                                         "press ENTER to continue to the second part.")
+message3.draw()
+window.flip()
 
 selected_key = ""
 rightKeyReleased = False
@@ -452,7 +463,7 @@ while not rightKeyReleased:
     allKeys = event.waitKeys()
     keyDownTime = datetime.datetime.now()
     for key in allKeys:
-        if key == '\n' or key== '\r':
+        if key == 'return':
             rightKeyReleased = True
             webbrowser.open(QUALTRICS_LINK)
 
