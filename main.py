@@ -4,6 +4,7 @@ import datetime
 import os
 import time
 import tkinter as tk
+import webbrowser
 from random import shuffle
 
 from VisualStimulus import VisualStimulus
@@ -47,6 +48,8 @@ AGE = 18
 GENDER = "M"
 VISION = "Ja"
 DEBRIEFING = "Ja"
+
+QUALTRICS_LINK = "https://kuleuven.eu.qualtrics.com/jfe/form/SV_0Al2O4TyMhY6uxw"
 
 # define utility methods
 def get_frames_by_millieseconds(duration_in_millies):
@@ -156,8 +159,8 @@ class WelcomeFrame:
         label_HSF_example.config(font=(TEXT_FONT, TEXT_FONT_SIZE))
         lsf_example_canvas = tk.Canvas(self.pictureFrame, width=400, height=250)
         hsf_example_canvas = tk.Canvas(self.pictureFrame, width=400, height=250)
-        lsf_img_example = ImageTk.PhotoImage(Image.open("img/examples/lsf_example.jpg").resize((400, 250)))
-        hsf_img_example = ImageTk.PhotoImage(Image.open("img/examples/hsf_example.jpg").resize((400, 250)))
+        lsf_img_example = ImageTk.PhotoImage(Image.open("img/examples/lsf_example.png").resize((400, 250)))
+        hsf_img_example = ImageTk.PhotoImage(Image.open("img/examples/hsf_example.png").resize((400, 250)))
         lsf_example_canvas.grid(row=1, column=0)
         hsf_example_canvas.grid(row=1, column=1)
         lsf_example_canvas.create_image(0, 0, anchor=tk.NW, image=lsf_img_example)
@@ -438,6 +441,19 @@ for visualImageStimN in range(len(visual_stimuli)):
     fileWriter.add_row(column_data)
 
 
+#go to qualtrics
+window.flip()
+message1 = visual.TextStim(win=window, pos=[0, 0], text="This is the end of the first part of the experiment. Please "
+                                                        "press ENTER to continue to the second part.")
 
+selected_key = ""
+rightKeyReleased = False
+while not rightKeyReleased:
+    allKeys = event.waitKeys()
+    keyDownTime = datetime.datetime.now()
+    for key in allKeys:
+        if key == '\n' or key== '\r':
+            rightKeyReleased = True
+            webbrowser.open(QUALTRICS_LINK)
 
 
